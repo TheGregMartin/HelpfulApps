@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Adjust PPGP Helper</title>
+<title>EGO calculator and Adjust PPGP helper</title>
 <meta name="description" content="Set the four gene percentages on an interactive Cyclicity PPGP mat.">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iI2U2ZTZlNiIvPjxwYXRoIGQ9Ik03IDE2VjdNMTMgMTZWMTFNMTkgMTZWMjVNMjUgMTZWMjEiIHN0cm9rZT0iIzAwNjllMCIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHBhdGggZD0iTTMgMTZIMjkiIHN0cm9rZT0iIzQ0NCIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+Cg==" type="image/svg+xml">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#e6e6e6;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"}main{padding:12px;height:100svh;display:flex;flex-direction:column}h1{text-align:center;font-size:clamp(1.25rem,4vw,1.75rem);font-weight:400;margin:0 auto 8px;width:min(100%,620px);padding:10px 12px;background:#f2f2f2;border:1px solid #000;border-radius:12px;flex-shrink:0}.mat{position:relative;overflow:hidden;width:100%;aspect-ratio:680/1300;margin:auto}.mat>img{position:absolute;width:231.617647059%;max-width:none;height:auto;left:-14.705882353%;top:-15.769230769%;user-select:none;pointer-events:none}.grid{position:absolute;left:13.088235294%;top:6.230769231%;width:74.117647059%;height:88%;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(31,1fr)}.cell{appearance:none;border:0;border-radius:0;padding:0;margin:0;background:transparent;cursor:pointer;touch-action:manipulation;position:relative}.cell.filled::before,.cell.provisional::before{content:"";position:absolute;inset:1px;border-radius:999px;background:rgba(0,105,224,.70);box-shadow:inset 0 0 0 1px rgba(0,58,148,.3);pointer-events:none}.cell.selected::before{background:rgba(91,33,153,.90);box-shadow:inset 0 0 0 1px rgba(74,21,129,.4)}.cell.provisional::before{background:#ed5858;box-shadow:inset 0 0 0 1px #c43c3c}.cell.filled:not(.confirmed)::before{background:repeating-linear-gradient(135deg,rgba(0,105,224,.70) 0 5px,rgba(117,145,177,.85) 5px 10px)}.cell:focus-visible{outline:3px solid #072f73;outline-offset:-3px;z-index:1}@media(hover:hover) and (pointer:fine){.cell:not(:disabled):hover{box-shadow:inset 0 0 0 2px #0065cf}}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+*{box-sizing:border-box}html,body{height:100%;overflow:hidden;overscroll-behavior:none;touch-action:pinch-zoom}body{margin:0;background:#e6e6e6;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"}main{padding:12px;height:100svh;display:flex;flex-direction:column}h1{text-align:center;font-size:clamp(1.25rem,4vw,1.75rem);font-weight:400;margin:0 auto 8px;width:min(100%,620px);padding:10px 12px;background:#f2f2f2;border:1px solid #000;border-radius:12px;flex-shrink:0}.mat{position:relative;overflow:hidden;width:100%;aspect-ratio:680/1300;margin:auto}.mat>img{position:absolute;width:231.617647059%;max-width:none;height:auto;left:-14.705882353%;top:-15.769230769%;user-select:none;pointer-events:none}.grid{touch-action:none;user-select:none;-webkit-user-select:none;position:absolute;left:13.088235294%;top:6.230769231%;width:74.117647059%;height:88%;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(31,1fr)}.cell{appearance:none;border:0;border-radius:0;padding:0;margin:0;background:transparent;cursor:pointer;touch-action:none;position:relative}.cell.filled::before,.cell.provisional::before{content:"";position:absolute;inset:1px;border-radius:999px;background:rgba(0,105,224,.70);box-shadow:inset 0 0 0 1px rgba(0,58,148,.3);pointer-events:none}.cell.selected::before{background:rgba(91,33,153,.90);box-shadow:inset 0 0 0 1px rgba(74,21,129,.4)}.cell.provisional::before{background:#ed5858;box-shadow:inset 0 0 0 1px #c43c3c}.cell.filled:not(.confirmed)::before{background:repeating-linear-gradient(135deg,rgba(0,105,224,.70) 0 5px,rgba(117,145,177,.85) 5px 10px)}.cell:focus-visible{outline:3px solid #072f73;outline-offset:-3px;z-index:1}@media(hover:hover) and (pointer:fine){.cell:not(:disabled):hover{box-shadow:inset 0 0 0 2px #0065cf}}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .helper{width:min(100%,620px);margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0}.stage{flex:1;min-height:0;container-type:size}.workspace{height:100%;width:min(100%,calc(100cqh * .5230769231 + 128px));margin:auto;display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:32px;align-items:center}.controls{display:flex;flex-direction:column;gap:12px}.controls button,.controls a{min-height:44px;width:100%;padding:10px 4px;border:1px solid #666;border-radius:8px;background:#fafafa;color:#111;font:inherit;font-size:1rem;cursor:pointer;touch-action:manipulation}.controls button:focus-visible,.controls a:focus-visible{outline:3px solid #111;outline-offset:3px}.cell:disabled{cursor:default;opacity:1}.feedback{font-family:inherit;font-size:1rem;line-height:1.35;text-align:center;margin:0;padding:12px;min-height:0}.feedback-panel{position:relative;background:#f2f2f2;border:1px solid #000;border-radius:12px;margin-top:8px;flex-shrink:0}.feedback-size{visibility:hidden}#feedback{position:absolute;inset:0;align-content:center}.feedback.error{color:#a01414}.controls a{display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;line-height:1.25;padding:10px 6px}.controls h2{font-size:1rem;font-weight:600;margin:24px 0 0;text-align:center}.controls{gap:10px}
 @media(max-width:500px){.workspace{width:min(100%,calc(100cqh * .5230769231 + 136px));grid-template-columns:minmax(0,1fr) 112px;gap:24px}.controls{gap:4px}.controls button,.controls a{font-size:14px;line-height:1.2;padding:6px;min-height:36px}.controls h2{font-size:14px;margin:14px 0 0}.feedback{font-size:14px;line-height:1.2}}
 @media(max-width:500px) and (max-height:520px){main{padding:6px}h1{padding:6px;font-size:20px;margin-bottom:6px}.controls{gap:3px}.controls button,.controls a{font-size:13px;padding:4px;min-height:32px}.controls h2{font-size:13px;margin-top:8px}.feedback{font-size:13px;line-height:1.15;padding:8px}.feedback-panel{margin-top:6px}}
+.controls button{background:#e0ebf7}.controls a{background:#ece3f4}.controls button:disabled{background:#e8eef5;color:#737b85;border-color:#a3aab3;cursor:default}
 </style>
 </head>
 <body>
 <main>
-<h1>Adjust PPGP Helper</h1>
+<h1>EGO calculator and Adjust PPGP helper</h1>
 <div class="helper">
 <div class="stage"><div class="workspace">
 <div class="mat">
@@ -32,7 +33,7 @@
 </div>
 </div>
 </div>
-<div class="feedback-panel"><p class="feedback feedback-size" aria-hidden="true">Raising C from 39% to 40% and lowering D from 11% to 10% is a valid PPGP adjustment. It requires <strong>double-marking 30 boxes</strong> from the Progress Points grid on your polity screen (30 = 15 for the C column + 15 for the D column). Try another combination if you want.</p>
+<div class="feedback-panel"><p class="feedback feedback-size" aria-hidden="true">Raising C from 39% to 40% and lowering D from 11% to 10% is a valid PPGP adjustment. It requires <strong>double-marking 30 boxes</strong> from the Progress Points grid on your polity screen (15 for the C column + 15 for the D column). Try another combination if you want.</p>
 <p id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></p></div>
 </div>
 <p id="values" class="sr-only" aria-live="polite" aria-atomic="true"></p>
@@ -78,7 +79,7 @@ function updateFeedback() {
     feedback.replaceChildren(
       `Raising ${genes[raiseColumn]} from ${values[raiseColumn]}% to ${raised}% and lowering ${genes[lowerColumn]} from ${values[lowerColumn]}% to ${lowered}% is a valid PPGP adjustment. It requires `,
       emphasis,
-      ` from the Progress Points grid on your polity screen (${cost} = ${raiseCost} for the ${genes[raiseColumn]} column + ${lowerCost} for the ${genes[lowerColumn]} column). Try another combination if you want.`
+      ` from the Progress Points grid on your polity screen (${raiseCost} for the ${genes[raiseColumn]} column + ${lowerCost} for the ${genes[lowerColumn]} column). Try another combination if you want.`
     );
   }
   else feedback.textContent = raiseColumn !== null
@@ -86,6 +87,9 @@ function updateFeedback() {
     : `Lower ${genes[lowerColumn]} to ${values[lowerColumn] - 1}%. Choose an upper half to raise another gene.`;
 }
 function render() {
+  const atBaseline = values.every(value => value === 25);
+  document.querySelector('#reset').disabled = atBaseline;
+  confirmButton.disabled = atBaseline;
   confirmButton.textContent = locked ? 'Return to current PPGP' : 'Confirm current PPGP';
   cells.forEach((column, index) => {
     const value = values[index];
@@ -163,6 +167,50 @@ document.querySelector('#reset').addEventListener('click', () => {
   confirmButton.disabled = false;
   render();
 });
+// Keep a drag tied to the column where it began, even outside the grid.
+let drag = null;
+let suppressPointerClick = false;
+function updateDrag(clientY) {
+  const bounds = grid.getBoundingClientRect();
+  const row = Math.max(10, Math.min(40, 40 - Math.floor((clientY - bounds.top) / bounds.height * 31)));
+  setValue(drag.column, row);
+}
+grid.addEventListener('pointerdown', event => {
+  suppressPointerClick = false;
+  if (locked || !event.isPrimary || event.button !== 0 || drag) return;
+  const bounds = grid.getBoundingClientRect();
+  const column = Math.max(0, Math.min(3, Math.floor((event.clientX - bounds.left) / bounds.width * 4)));
+  drag = { pointerId: event.pointerId, column };
+  suppressPointerClick = true;
+  grid.setPointerCapture(event.pointerId);
+  updateDrag(event.clientY);
+  event.preventDefault();
+});
+grid.addEventListener('pointermove', event => {
+  if (drag?.pointerId !== event.pointerId) return;
+  updateDrag(event.clientY);
+  event.preventDefault();
+});
+function finishDrag(event) {
+  if (drag?.pointerId !== event.pointerId) return;
+  if (event.type === 'pointerup') updateDrag(event.clientY);
+  drag = null;
+  if (grid.hasPointerCapture(event.pointerId)) grid.releasePointerCapture(event.pointerId);
+}
+grid.addEventListener('pointerup', finishDrag);
+grid.addEventListener('pointercancel', finishDrag);
+grid.addEventListener('lostpointercapture', () => { drag = null; });
+grid.addEventListener('click', event => {
+  if (suppressPointerClick && event.detail !== 0) {
+    suppressPointerClick = false;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+}, true);
+// Prevent single-finger page rubber-banding while preserving pinch zoom.
+document.addEventListener('touchmove', event => {
+  if (event.touches.length === 1 && event.cancelable) event.preventDefault();
+}, { passive: false });
 for (let row = 40; row >= 10; row--) {
   genes.forEach((gene, column) => {
     const button = document.createElement('button');
