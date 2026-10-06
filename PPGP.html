@@ -15,6 +15,7 @@
 @media(max-width:500px){h1{font-size:clamp(12px,3.6vw,18px);white-space:nowrap}}
 .intro-panel{width:min(100%,620px);margin:0 auto 8px;flex-shrink:0;background:#f2f2f2;border:1px solid #000;border-radius:12px}.intro-panel h1{width:100%;border:0;border-radius:0;background:transparent;margin:0}.intro-panel .feedback-panel{border:0;border-radius:0;background:transparent;margin:0}.controls h2{margin-top:36px}@media(max-width:500px){.controls h2{margin-top:24px}}@media(max-width:500px) and (max-height:520px){.intro-panel{margin-bottom:6px}.controls h2{margin-top:16px}}
 .feedback{white-space:pre-line}.feedback-size{display:grid}.feedback-size>.feedback{grid-area:1/1}.feedback.error{font-size:20px}.feedback.actionable{cursor:pointer;touch-action:manipulation}.feedback:focus-visible{outline:2px solid #075cb8;outline-offset:-4px;border-radius:10px}@media(max-width:500px){.feedback.error{font-size:18px}}
+.intro-panel h1{font-weight:700}.tap-prompt{color:#21643d}@media(max-width:500px){.intro-panel h1{font-size:clamp(14px,4.2vw,18px);padding-left:6px;padding-right:6px;letter-spacing:-.15px}}
 </style>
 </head>
 <body>
@@ -58,6 +59,12 @@ let validationAttempted = false;
 let raiseColumn = null;
 let lowerColumn = null;
 let error = '';
+function tapPrompt(text) {
+  const span = document.createElement('span');
+  span.className = 'tap-prompt';
+  span.textContent = text;
+  return span;
+}
 function updateFeedback() {
   const total = values.reduce((sum, value) => sum + value, 0);
   const invalid = !locked && validationAttempted && total !== 100;
@@ -77,7 +84,7 @@ function updateFeedback() {
     const breakdown = genes.map((gene, index) => `${offsets[index]} for the ${gene} column`).join(' + ');
     const emphasis = document.createElement('strong');
     emphasis.textContent = `Your EGO is ${ego}`;
-    feedback.replaceChildren('Confirmed. ', emphasis, ` (${breakdown}).\n\nTap this message to continue.`);
+    feedback.replaceChildren('Confirmed. ', emphasis, ` (${breakdown}).\n\n`, tapPrompt('Tap this message to continue.'));
   }
   else if (raiseColumn === null && lowerColumn === null)
     feedback.textContent = 'Adjusting your PPGP involves adding 1 to a column that’s 25% or higher, while subtracting 1 from a column that’s 25% or lower.\n\nTo examine your options, tap the upper or lower half of a column to raise or lower a gene type.';
@@ -92,7 +99,7 @@ function updateFeedback() {
     feedback.replaceChildren(
       `Raising ${genes[raiseColumn]} from ${values[raiseColumn]}% to ${raised}% and lowering ${genes[lowerColumn]} from ${values[lowerColumn]}% to ${lowered}% is a valid PPGP adjustment. It requires `,
       emphasis,
-      ` from the Progress Points grid on your polity screen (${raiseCost} for the ${genes[raiseColumn]} column + ${lowerCost} for the ${genes[lowerColumn]} column).\nTap here to try other combinations, or tap “Reset entire PPGP table”.`
+      ` from the Progress Points grid on your polity screen (${raiseCost} for the ${genes[raiseColumn]} column + ${lowerCost} for the ${genes[lowerColumn]} column).\n`, tapPrompt('Tap here to try other combinations, or tap “Reset entire PPGP table”.')
     );
   }
   else feedback.textContent = raiseColumn !== null
