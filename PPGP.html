@@ -16,6 +16,8 @@
 .intro-panel{width:min(100%,620px);margin:0 auto 8px;flex-shrink:0;background:#f2f2f2;border:1px solid #000;border-radius:12px}.intro-panel h1{width:100%;border:0;border-radius:0;background:transparent;margin:0}.intro-panel .feedback-panel{border:0;border-radius:0;background:transparent;margin:0}.controls h2{margin-top:36px}@media(max-width:500px){.controls h2{margin-top:24px}}@media(max-width:500px) and (max-height:520px){.intro-panel{margin-bottom:6px}.controls h2{margin-top:16px}}
 .feedback{white-space:pre-line}.feedback-size{display:grid}.feedback-size>.feedback{grid-area:1/1}.feedback.error{font-size:20px}.feedback.actionable{cursor:pointer;touch-action:manipulation}.feedback:focus-visible{outline:2px solid #075cb8;outline-offset:-4px;border-radius:10px}@media(max-width:500px){.feedback.error{font-size:18px}}
 .intro-panel h1{font-weight:700}.tap-prompt{color:#21643d}@media(max-width:500px){.intro-panel h1{font-size:clamp(14px,4.2vw,18px);padding-left:6px;padding-right:6px;letter-spacing:-.15px}}
+.controls{align-self:stretch;padding-top:8px;justify-content:flex-start}.distinct-option{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:auto;padding:12px 0 4px;text-align:center;font-size:14px;line-height:1.2;cursor:pointer;touch-action:manipulation}.distinct-option input{width:22px;height:22px;margin:0;accent-color:#476e9c;cursor:pointer}.distinct-option input:focus-visible{outline:2px solid #075cb8;outline-offset:3px}@media(max-width:500px){.controls h2{margin-top:12px}.controls{padding-top:0}.distinct-option{padding-top:8px;font-size:13px}}@media(max-width:500px) and (max-height:520px){.controls h2{margin-top:6px}.distinct-option{font-size:12px;gap:4px;padding-top:6px}.distinct-option input{width:20px;height:20px}}
+.workspace{grid-template-rows:minmax(0,1fr)}.controls{transform:scale(var(--controls-scale,1));transform-origin:top right;justify-self:end;width:calc(100% / var(--controls-scale,1));height:calc(100% / var(--controls-scale,1));min-height:0}.distinct-option:has(input:disabled){color:#737b85;cursor:default}.distinct-option input:disabled{cursor:default}
 </style>
 </head>
 <body>
@@ -38,6 +40,7 @@ To examine your options, tap the upper or lower half of a column to raise or low
 <a href="https://thegregmartin.github.io/Cyclicity/reference/action-descriptions/the-adjust-ppgp-action/index.html" target="_blank" rel="noopener noreferrer">“Adjust PPGP” rules</a>
 <a href="https://thegregmartin.github.io/Cyclicity/game-setting/genetic-profile-information/index.html" target="_blank" rel="noopener noreferrer">Genetic Profile and EGO</a>
 <a href="https://thegregmartin.github.io/Cyclicity/game-setting/essential-genes/index.html" target="_blank" rel="noopener noreferrer">Essential genes</a>
+<label class="distinct-option"><input id="distinct-scores" type="checkbox"><span>Scores must always be different</span></label>
 </div>
 </div>
 </div>
@@ -47,6 +50,20 @@ To examine your options, tap the upper or lower half of a column to raise or low
 </main>
 <script>
 'use strict';
+const controls = document.querySelector('.controls');
+const stage = document.querySelector('.stage');
+function fitControls() {
+  let scale = 1;
+  controls.style.setProperty('--controls-scale', '1');
+  for (let pass = 0; pass < 4; pass++) {
+    const height = controls.lastElementChild.getBoundingClientRect().bottom - controls.getBoundingClientRect().top;
+    if (height <= stage.clientHeight) break;
+    scale *= (stage.clientHeight - 2) / height;
+    controls.style.setProperty('--controls-scale', String(scale));
+  }
+}
+new ResizeObserver(fitControls).observe(stage);
+window.addEventListener('resize', fitControls);
 const genes = ['C', 'D', 'F', 'P'];
 const values = [25, 25, 25, 25];
 const grid = document.querySelector('.grid');
@@ -107,6 +124,7 @@ function updateFeedback() {
     : `${genes[lowerColumn]} can be lowered to ${values[lowerColumn] - 1}%.\n\nTap the upper half of another column to raise that value, or tap the lower half of another column to change the gene type being lowered.`;
 }
 function render() {
+  document.querySelector('#distinct-scores').disabled = locked;
   const atBaseline = values.every(value => value === 25);
   document.querySelector('#reset').disabled = atBaseline;
   confirmButton.disabled = atBaseline;
@@ -140,6 +158,21 @@ function setValue(column, value) {
   error = '';
   render();
 }
+function duplicatePair(scores) {
+  for (let a = 0; a < scores.length; a++) {
+    for (let b = a + 1; b < scores.length; b++) {
+      if (scores[a] === scores[b]) return [a, b];
+    }
+  }
+  return null;
+}
+document.querySelector('#distinct-scores').addEventListener('change', () => {
+  if (!locked) {
+    error = '';
+    validationAttempted = false;
+    updateFeedback();
+  }
+});
 function selectHalf(column, row) {
   if (!locked) { setValue(column, row); return; }
   if (showConfirmation) return;
@@ -153,14 +186,28 @@ function selectHalf(column, row) {
     updateFeedback();
     return;
   }
-  error = '';
+  let nextRaise = raiseColumn;
+  let nextLower = lowerColumn;
   if (raising) {
-    raiseColumn = raiseColumn === column ? null : column;
-    if (raiseColumn === column && lowerColumn === column) lowerColumn = null;
+    nextRaise = raiseColumn === column ? null : column;
+    if (nextRaise === column && nextLower === column) nextLower = null;
   } else {
-    lowerColumn = lowerColumn === column ? null : column;
-    if (lowerColumn === column && raiseColumn === column) raiseColumn = null;
+    nextLower = lowerColumn === column ? null : column;
+    if (nextLower === column && nextRaise === column) nextRaise = null;
   }
+  if (document.querySelector('#distinct-scores').checked) {
+    const proposed = values.map((score, index) => score + (index === nextRaise ? 1 : 0) - (index === nextLower ? 1 : 0));
+    const pair = duplicatePair(proposed);
+    if (pair) {
+      const other = pair.find(index => index !== column);
+      error = `Cannot ${raising ? 'raise' : 'lower'} ${genes[column]} to ${proposed[column]}%: ${genes[other]} would also be ${proposed[column]}%. All four scores must stay different.`;
+      updateFeedback();
+      return;
+    }
+  }
+  error = '';
+  raiseColumn = nextRaise;
+  lowerColumn = nextLower;
   render();
 }
 confirmButton.addEventListener('click', () => {
@@ -173,6 +220,13 @@ confirmButton.addEventListener('click', () => {
     return;
   }
   validationAttempted = true;
+  error = '';
+  const pair = document.querySelector('#distinct-scores').checked ? duplicatePair(values) : null;
+  if (pair) {
+    error = `${genes[pair[0]]} and ${genes[pair[1]]} are both ${values[pair[0]]}%. All four scores must be different before confirming. Adjust the matching columns.`;
+    render();
+    return;
+  }
   if (values.reduce((sum, value) => sum + value, 0) === 100) {
     locked = true;
     showConfirmation = true;
